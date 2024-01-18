@@ -44,5 +44,3 @@ watchEffect(() => {
 <template>
   <canvas :id="clockId" :width="width" :height="height" />
 </template>
-
-<style scoped></style>

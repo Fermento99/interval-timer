@@ -30,5 +30,3 @@ import Button from '@/components/ButtonComponent/ButtonComponent.vue';
     />
   </main>
 </template>
-
-<style scoped></style>

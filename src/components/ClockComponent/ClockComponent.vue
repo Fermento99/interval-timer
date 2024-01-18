@@ -43,5 +43,3 @@ const percentage = computed(() => clockState.progress / clockState.period);
   <button @click="stop">stop</button>
   <button @click="reset">reset</button>
 </template>
-
-<style scoped></style>

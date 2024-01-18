@@ -1,12 +1,9 @@
-*,
-::after,
-::before {
-  position: relative;
-  box-sizing: border-box;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-body {
-  background-color: #E7E7E7;
-  color: #000000;
-  font-family: 'Share Tech Mono', monospace;
+@layer base {
+    body {
+        @apply font-monospace bg-gray-200 text-black;
+    }
 }
