@@ -9,6 +9,10 @@ module.exports = {
         special: {
           DEFAULT: '#ffd23f',
         },
+        exercise: {
+          green: '#629460',
+          red: '#ED254E',
+        },
       },
       fontFamily: {
         monospace: ['Share Tech Mono', 'monospace'],

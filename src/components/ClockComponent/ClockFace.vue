@@ -2,19 +2,20 @@
 import { onMounted, ref, watchEffect } from 'vue';
 import { ClockDrawer } from '@/components/ClockComponent/ClockDrawer';
 
-const props = defineProps({
-  clockId: { type: String, required: true },
-  percentage: { type: Number, required: true },
-  elapsedTime: { type: Number, required: true },
-  height: { type: Number, required: true },
-  width: { type: Number, required: true },
-});
+const props = defineProps<{
+  clockId: string;
+  percentage: number;
+  elapsedTime: number;
+  height: number;
+  width: number;
+}>();
 
 const drawer = ref();
 
 onMounted(() => {
   const canvas = document.getElementById(props.clockId) as HTMLCanvasElement;
   const ctx = canvas.getContext('2d')!;
+  // TODO: investigate if colors could be imported from tailwind
   drawer.value = new ClockDrawer({
     ctx,
     height: props.height,
@@ -28,15 +29,15 @@ onMounted(() => {
   });
 
   drawer.value.drawClock({
-    time: props.elapsedTime,
-    percentage: props.percentage,
+    time: props.elapsedTime!,
+    percentage: props.percentage!,
   });
 });
 
 watchEffect(() => {
   drawer.value?.drawClock({
-    time: props.elapsedTime,
-    percentage: props.percentage,
+    time: props.elapsedTime!,
+    percentage: props.percentage!,
   });
 });
 </script>
