@@ -3,9 +3,15 @@ import { useClockStore } from '@/stores/ClockStore';
 import { computed } from 'vue';
 import ClockFace from '@/components/ClockComponent/ClockFace.vue';
 
-defineProps({
-  clockId: { type: String, required: true },
-});
+const props = withDefaults(
+  defineProps<{
+    clockId: string;
+    size?: 'big' | 'small';
+  }>(),
+  {
+    size: 'big',
+  }
+);
 
 const clockState = useClockStore();
 
@@ -23,6 +29,17 @@ const reset = () => {
 
 const elapsedTime = computed(() => clockState.progress / 1000);
 const percentage = computed(() => clockState.progress / clockState.period);
+
+const sizeValue = computed(() => {
+  switch (props.size) {
+    case 'big':
+      return 500;
+    case 'small':
+      return 250;
+    default:
+      return 500;
+  }
+});
 </script>
 
 <template>
@@ -30,16 +47,7 @@ const percentage = computed(() => clockState.progress / clockState.period);
     :clock-id="clockId"
     :percentage="percentage"
     :elapsed-time="elapsedTime"
-    :height="400"
-    :width="400"
+    :height="sizeValue"
+    :width="sizeValue"
   />
-  <h1>{{ clockId }}</h1>
-  <p>{{ elapsedTime }} s of progress</p>
-  <p>{{ percentage }}</p>
-  <p>set to period of {{ clockState.period }} ms</p>
-  <p>started at {{ clockState._startedTimestamp }}</p>
-  <p>{{ clockState._interval }} interval id</p>
-  <button @click="start">start</button>
-  <button @click="stop">stop</button>
-  <button @click="reset">reset</button>
 </template>

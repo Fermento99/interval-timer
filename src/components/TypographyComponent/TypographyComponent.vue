@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type sizeType = 'normal' | 'large';
+export type sizeType = 'normal' | 'large';
 type colorType = 'primary' | 'secondary';
 
 const props = withDefaults(

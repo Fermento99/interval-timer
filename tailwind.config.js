@@ -21,6 +21,9 @@ module.exports = {
       fontFamily: {
         monospace: ['Share Tech Mono', 'monospace'],
       },
+      fontSize: {
+        base: ['1rem', '1.125rem'],
+      },
     },
   },
   plugins: [],

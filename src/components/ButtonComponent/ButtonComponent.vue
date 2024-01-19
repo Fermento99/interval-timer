@@ -24,9 +24,9 @@ const emits = defineEmits<{
 const getSizeStyles = (size: sizeType) => {
   switch (size) {
     case 'medium':
-      return 'text-base px-4 py-1';
+      return 'text-base px-4 py-2';
     case 'small':
-      return 'text-xs px-2 py-0.5';
+      return 'text-xs px-2 py-1';
   }
 };
 
