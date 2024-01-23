@@ -4,34 +4,21 @@ import ExerciseTableComponent from '@/components/ExerciseTableComponent/Exercise
 import ButtonComponent from '@/components/ButtonComponent/ButtonComponent.vue';
 import NotesComponent from '@/components/NotesComponent/NotesComponent.vue';
 import { useClockStore } from '@/stores/ClockStore';
-import { watchEffect } from 'vue';
-import { useExerciseStore } from '@/stores/ExerciseStore';
 
 const clockState = useClockStore();
-const exerciseStore = useExerciseStore();
 
 const start = () => {
-  clockState.startClock();
+  clockState.startClocks();
 };
 
 const stop = () => {
-  clockState.pauseClock();
+  clockState.stopClocks();
 };
 
 const reset = () => {
-  clockState.setClock({ period: 1 });
+  clockState.setClock('exercise-clock', { period: 0.5 });
+  clockState.setClock('training-clock', { period: 5, startedAt: Date.now() });
 };
-
-watchEffect(() => {
-  if (
-    clockState.percentage >= 1 &&
-    exerciseStore.exerciseTable.iterator < exerciseStore.exerciseTable.length
-  ) {
-    exerciseStore.moveToNextExercise();
-    clockState.setClock({ period: 1 });
-    clockState.startClock();
-  }
-});
 </script>
 
 <template>

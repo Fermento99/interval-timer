@@ -57,7 +57,7 @@ export class ClockDrawer {
     this.ctx.fillStyle = this.colors.text;
     this.ctx.textAlign = 'center';
     this.ctx.font = `${fontSize}px "Share Tech Mono", monospace`;
-    this.ctx.fillText(`${time.toPrecision(3)}s`, xCenter, yCenter + fontSize / 4);
+    this.ctx.fillText(`${time.toPrecision(2)}s`, xCenter, yCenter + fontSize / 4);
     this.ctx.closePath();
   }
 }
