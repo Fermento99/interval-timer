@@ -15,20 +15,7 @@ const props = withDefaults(
 
 const clockState = useClockStore();
 
-const start = () => {
-  clockState.startClock();
-};
-
-const stop = () => {
-  clockState.pauseClock();
-};
-
-const reset = () => {
-  clockState.setClock({ period: 20 });
-};
-
 const elapsedTime = computed(() => clockState.progress / 1000);
-const percentage = computed(() => clockState.progress / clockState.period);
 
 const sizeValue = computed(() => {
   switch (props.size) {
@@ -45,7 +32,7 @@ const sizeValue = computed(() => {
 <template>
   <ClockFace
     :clock-id="clockId"
-    :percentage="percentage"
+    :percentage="clockState.percentage"
     :elapsed-time="elapsedTime"
     :height="sizeValue"
     :width="sizeValue"

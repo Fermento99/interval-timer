@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 interface ExerciseTable {
   cycles: Cycle[];
@@ -8,6 +8,8 @@ interface ExerciseTable {
   exerciseTime: number;
   restTime: number;
   pauseTime: number;
+  iterator: number;
+  length: number;
 }
 
 interface Cycle {
@@ -37,12 +39,31 @@ const DEFAULT_TABLE_SETUP = {
   exerciseTime: 50,
   restTime: 30,
   pauseTime: 210,
+  iterator: 0,
+  length: 21,
 };
 export const useExerciseStore = defineStore('exercise', () => {
   const exerciseTable = ref<ExerciseTable>(DEFAULT_TABLE_SETUP);
+  const currentExercise = computed(() => {
+    const { cycles, cycleLength, iterator } = exerciseTable.value;
+    console.log('current', Math.floor(iterator / cycleLength), iterator % cycleLength);
+    return cycles[Math.floor(iterator / cycleLength)].exercises[iterator % cycleLength];
+  });
+  const nextExercise = computed(() => {
+    const { cycles, cycleLength, iterator } = exerciseTable.value;
+    if ((iterator + 1) % cycleLength === 0) {
+      console.log('next', Math.floor(iterator / cycleLength) + 1, 0);
+      return cycles[Math.floor(iterator / cycleLength) + 1]?.exercises[0] || { name: '--' };
+    }
+    console.log('next', Math.floor(iterator / cycleLength), (iterator % cycleLength) + 1);
+    return cycles[Math.floor(iterator / cycleLength)].exercises[(iterator % cycleLength) + 1];
+  });
 
-  const setExerciseTableConfig = (tableConfig: Omit<ExerciseTable, 'cycles'>) => {
-    Object.assign(exerciseTable.value, tableConfig);
+  const setExerciseTableConfig = (tableConfig: Omit<ExerciseTable, 'cycles' | 'iterator'>) => {
+    Object.assign(exerciseTable.value, tableConfig, {
+      iterator: 0,
+      length: tableConfig.cycleLength * tableConfig.cycleCunt,
+    });
     exerciseTable.value.cycles = Array(tableConfig.cycleLength)
       .fill(null)
       .map(() => ({
@@ -56,13 +77,25 @@ export const useExerciseStore = defineStore('exercise', () => {
       }));
   };
 
-  const setExerciseDetails = (
-    cycleIndex: number,
-    exerciseIndex: number,
-    exerciseConfig: Partial<Exercise>
-  ) => {
-    Object.assign(exerciseTable.value.cycles[cycleIndex].exercises[exerciseIndex], exerciseConfig);
+  const setExerciseDetails = (index: number, exerciseConfig: Partial<Exercise>) => {
+    const { cycles, cycleLength } = exerciseTable.value;
+    Object.assign(
+      cycles[Math.floor(index / cycleLength)].exercises[index % cycleLength],
+      exerciseConfig
+    );
   };
 
-  return { exerciseTable, setExerciseTableConfig, setExerciseDetails };
+  const moveToNextExercise = () => {
+    setExerciseDetails(exerciseTable.value.iterator, { done: true });
+    exerciseTable.value.iterator++;
+  };
+
+  return {
+    exerciseTable,
+    currentExercise,
+    nextExercise,
+    setExerciseTableConfig,
+    setExerciseDetails,
+    moveToNextExercise,
+  };
 });

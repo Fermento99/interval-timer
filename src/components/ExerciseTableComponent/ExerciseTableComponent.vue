@@ -3,7 +3,6 @@ import { useExerciseStore } from '@/stores/ExerciseStore';
 import ExerciseTile from '@/components/ClockComponent/ExerciseTile.vue';
 
 const exerciseStore = useExerciseStore();
-console.log(exerciseStore.exerciseTable);
 </script>
 
 <template>
@@ -11,9 +10,11 @@ console.log(exerciseStore.exerciseTable);
     <div
       class="flex flex-row gap-2"
       v-for="(cycle, cycleIndex) in exerciseStore.exerciseTable.cycles"
+      :key="cycleIndex"
     >
       <ExerciseTile
         v-for="(exercise, exerciseIndex) in cycle.exercises"
+        :key="exerciseIndex"
         :cycle-index="cycleIndex"
         :exercise-index="exerciseIndex"
         :done="exercise.done"

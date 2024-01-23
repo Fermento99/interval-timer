@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 type SetClockOptions = { period: number };
 
@@ -8,6 +8,8 @@ export const useClockStore = defineStore('clock', () => {
   const period = ref(0);
   const _startedTimestamp = ref(0);
   const _interval = ref<number | undefined>();
+
+  const percentage = computed(() => progress.value / period.value);
 
   const stopClock = () => {
     clearInterval(_interval.value);
@@ -38,5 +40,14 @@ export const useClockStore = defineStore('clock', () => {
     stopClock();
   };
 
-  return { progress, period, _startedTimestamp, _interval, setClock, startClock, pauseClock };
+  return {
+    progress,
+    period,
+    _startedTimestamp,
+    _interval,
+    percentage,
+    setClock,
+    startClock,
+    pauseClock,
+  };
 });

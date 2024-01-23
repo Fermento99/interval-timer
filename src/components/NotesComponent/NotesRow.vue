@@ -7,7 +7,7 @@ withDefaults(
   defineProps<{
     label: string;
     value: string;
-    size: sizeType;
+    size?: sizeType;
   }>(),
   {
     size: 'large',
