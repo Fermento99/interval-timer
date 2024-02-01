@@ -2,100 +2,162 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 interface ExerciseTable {
-  cycles: Cycle[];
-  cycleCunt: number;
+  periods: Period[];
+  cycleCount: number;
   cycleLength: number;
   exerciseTime: number;
   restTime: number;
   pauseTime: number;
   iterator: number;
-  length: number;
 }
 
-interface Cycle {
-  exercises: Exercise[];
-}
-
-interface Exercise {
+interface Period {
   name: string;
   notes: string;
   done: boolean;
+  time: number;
+  mode: ClockMode;
 }
 
-const DEFAULT_TABLE_SETUP = {
-  cycles: Array(3)
-    .fill(null)
-    .map(() => ({
-      exercises: Array(7)
-        .fill(null)
-        .map(() => ({
-          name: 'new exercise',
-          notes: '',
-          done: false,
-        })),
-    })),
-  cycleCunt: 3,
+type ClockMode = 'exercise' | 'rest' | 'pause';
+type TableConfig = Omit<ExerciseTable, 'cycles' | 'iterator'>;
+
+const DEFAULT_TABLE_CONFIG = <TableConfig>{
+  cycleCount: 3,
   cycleLength: 7,
-  exerciseTime: 50,
-  restTime: 30,
-  pauseTime: 210,
-  iterator: 0,
-  length: 21,
+  exerciseTime: 0.5,
+  restTime: 0.2,
+  pauseTime: 5,
 };
+
+const generateTable = (config: TableConfig): ExerciseTable => {
+  const { cycleCount, cycleLength, exerciseTime, restTime, pauseTime } = config;
+  const length = cycleCount * cycleLength;
+  const periods = [
+    {
+      name: 'Head Start',
+      notes: '--',
+      done: false,
+      time: 10,
+      mode: 'pause',
+    },
+    ...Array(length)
+      .fill(null)
+      .flatMap((_, index): Period[] => [
+        {
+          name: 'New Exercise',
+          notes: '--',
+          done: false,
+          time: exerciseTime,
+          mode: 'exercise',
+        },
+        index % cycleLength === cycleLength - 1
+          ? {
+              name: 'pause',
+              notes: '--',
+              done: false,
+              time: pauseTime,
+              mode: 'pause',
+            }
+          : {
+              name: 'rest',
+              notes: '--',
+              done: false,
+              time: restTime,
+              mode: 'rest',
+            },
+      ]),
+  ];
+  periods.pop();
+
+  return <ExerciseTable>{
+    ...config,
+    periods,
+    iterator: 0,
+  };
+};
+
 export const useExerciseStore = defineStore('exercise', () => {
-  const exerciseTable = ref<ExerciseTable>(DEFAULT_TABLE_SETUP);
-  const currentExercise = computed(() => {
-    const { cycles, cycleLength, iterator } = exerciseTable.value;
-    console.log('current', Math.floor(iterator / cycleLength), iterator % cycleLength);
-    return cycles[Math.floor(iterator / cycleLength)].exercises[iterator % cycleLength];
-  });
-  const nextExercise = computed(() => {
-    const { cycles, cycleLength, iterator } = exerciseTable.value;
-    if ((iterator + 1) % cycleLength === 0) {
-      console.log('next', Math.floor(iterator / cycleLength) + 1, 0);
-      return cycles[Math.floor(iterator / cycleLength) + 1]?.exercises[0] || { name: '--' };
-    }
-    console.log('next', Math.floor(iterator / cycleLength), (iterator % cycleLength) + 1);
-    return cycles[Math.floor(iterator / cycleLength)].exercises[(iterator % cycleLength) + 1];
+  const exerciseTable = ref<ExerciseTable>(generateTable(DEFAULT_TABLE_CONFIG));
+
+  const periodSum = computed(() => {
+    const pauses = exerciseTable.value.pauseTime * (exerciseTable.value.cycleCount - 1) + 10;
+    const exercises =
+      exerciseTable.value.cycleCount *
+      exerciseTable.value.cycleLength *
+      exerciseTable.value.exerciseTime;
+    const rests =
+      exerciseTable.value.cycleCount *
+      (exerciseTable.value.cycleLength - 1) *
+      exerciseTable.value.restTime;
+    return pauses + rests + exercises;
   });
 
-  const setExerciseTableConfig = (tableConfig: Omit<ExerciseTable, 'cycles' | 'iterator'>) => {
+  const undoneExercises = computed(() =>
+    exerciseTable.value.periods.filter((period) => period.mode === 'exercise' && !period.done)
+  );
+
+  const exercises = computed(() =>
+    exerciseTable.value.periods.filter((period) => period.mode === 'exercise')
+  );
+
+  const currentExercise = computed(
+    () =>
+      undoneExercises.value[0] || {
+        name: '--',
+        notes: '--',
+        done: false,
+        time: 0,
+        mode: 'exercise',
+      }
+  );
+
+  const nextExercise = computed(
+    () =>
+      undoneExercises.value[1] || {
+        name: '--',
+        notes: '--',
+        done: false,
+        time: 0,
+        mode: 'exercise',
+      }
+  );
+
+  const currentClock = computed(() => exerciseTable.value.periods[exerciseTable.value.iterator]);
+
+  const setExerciseTableConfig = (tableConfig: TableConfig) => {
     Object.assign(exerciseTable.value, tableConfig, {
       iterator: 0,
-      length: tableConfig.cycleLength * tableConfig.cycleCunt,
+      length: tableConfig.cycleLength * tableConfig.cycleCount,
     });
-    exerciseTable.value.cycles = Array(tableConfig.cycleLength)
-      .fill(null)
-      .map(() => ({
-        exercises: Array(tableConfig.cycleCunt)
-          .fill(null)
-          .map(() => ({
-            name: 'new exercise',
-            notes: '',
-            done: false,
-          })),
-      }));
   };
 
-  const setExerciseDetails = (index: number, exerciseConfig: Partial<Exercise>) => {
-    const { cycles, cycleLength } = exerciseTable.value;
-    Object.assign(
-      cycles[Math.floor(index / cycleLength)].exercises[index % cycleLength],
-      exerciseConfig
-    );
+  const setExerciseDetails = (index: number, exerciseConfig: Partial<Period>) => {
+    Object.assign(exerciseTable.value.periods[index], exerciseConfig);
   };
 
-  const moveToNextExercise = () => {
+  const moveToNextClock = () => {
     setExerciseDetails(exerciseTable.value.iterator, { done: true });
     exerciseTable.value.iterator++;
   };
+
+  const resetTable = () => {
+    exerciseTable.value.periods.forEach((period) => (period.done = false));
+    exerciseTable.value.iterator = 0;
+  };
+
+  const getExercise = (index: number) => exercises.value[index];
 
   return {
     exerciseTable,
     currentExercise,
     nextExercise,
+    periodSum,
+    currentClock,
+    getExercise,
     setExerciseTableConfig,
     setExerciseDetails,
-    moveToNextExercise,
+    moveToNextClock,
+    resetTable,
   };
 });

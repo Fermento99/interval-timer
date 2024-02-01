@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useExerciseStore } from '@/stores/ExerciseStore';
-import ExerciseTile from '@/components/ClockComponent/ExerciseTile.vue';
+import ExerciseTile from '@/components/ExerciseTableComponent/ExerciseTile.vue';
 
 const exerciseStore = useExerciseStore();
 </script>
@@ -9,15 +9,16 @@ const exerciseStore = useExerciseStore();
   <div class="flex flex-col gap-2">
     <div
       class="flex flex-row gap-2"
-      v-for="(cycle, cycleIndex) in exerciseStore.exerciseTable.cycles"
+      v-for="cycleIndex in exerciseStore.exerciseTable.cycleCount"
       :key="cycleIndex"
     >
       <ExerciseTile
-        v-for="(exercise, exerciseIndex) in cycle.exercises"
+        v-for="exerciseIndex in exerciseStore.exerciseTable.cycleLength"
         :key="exerciseIndex"
-        :cycle-index="cycleIndex"
-        :exercise-index="exerciseIndex"
-        :done="exercise.done"
+        :exercise-index="
+          exerciseStore.exerciseTable.cycleLength * (cycleIndex - 1) + exerciseIndex - 1
+        "
+        :exerciseNumber="exerciseIndex"
       />
     </div>
   </div>

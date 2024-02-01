@@ -4,8 +4,14 @@ import ExerciseTableComponent from '@/components/ExerciseTableComponent/Exercise
 import ButtonComponent from '@/components/ButtonComponent/ButtonComponent.vue';
 import NotesComponent from '@/components/NotesComponent/NotesComponent.vue';
 import { useClockStore } from '@/stores/ClockStore';
+import { useExerciseStore } from '@/stores/ExerciseStore';
+import { watchEffect } from 'vue';
 
 const clockState = useClockStore();
+const exerciseState = useExerciseStore();
+
+clockState.setClock('exercise-clock', { period: exerciseState.currentClock.time });
+clockState.setClock('training-clock', { period: exerciseState.periodSum });
 
 const start = () => {
   clockState.startClocks();
@@ -16,9 +22,24 @@ const stop = () => {
 };
 
 const reset = () => {
-  clockState.setClock('exercise-clock', { period: 0.5 });
-  clockState.setClock('training-clock', { period: 5, startedAt: Date.now() });
+  exerciseState.resetTable();
+  clockState.setClock('exercise-clock', { period: exerciseState.currentClock.time });
+  clockState.setClock('training-clock', { period: exerciseState.periodSum });
 };
+
+watchEffect(() => {
+  const clock = clockState.getClock('exercise-clock');
+  if (clock.finished) {
+    exerciseState.moveToNextClock();
+    if (exerciseState.currentClock) {
+      const finishTimestamp = clock.startedAt + clock.period;
+      clockState.setClock('exercise-clock', {
+        period: exerciseState.currentClock.time,
+        startedAt: finishTimestamp,
+      });
+    }
+  }
+});
 </script>
 
 <template>

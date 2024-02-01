@@ -11,6 +11,6 @@ const exerciseStore = useExerciseStore();
       <NotesRow label="Current Exercise" :value="exerciseStore.currentExercise.name" />
       <NotesRow label="Exercise Notes" :value="exerciseStore.currentExercise.notes" />
     </div>
-    <NotesRow label="Upcoming Exercise" :value="exerciseStore.nextExercise.notes" size="normal" />
+    <NotesRow label="Upcoming Exercise" :value="exerciseStore.nextExercise.name" size="normal" />
   </div>
 </template>
