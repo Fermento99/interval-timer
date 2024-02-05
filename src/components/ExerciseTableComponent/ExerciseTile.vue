@@ -6,6 +6,10 @@ const props = defineProps<{
   exerciseNumber: number;
 }>();
 
+const emits = defineEmits<{
+  click: [exerciseIndex: number];
+}>();
+
 const exerciseStore = useExerciseStore();
 </script>
 
@@ -14,6 +18,7 @@ const exerciseStore = useExerciseStore();
     :class="`w-14 h-10 px-2 py-1 text-white text-xs flex justify-end items-end ${
       exerciseStore.getExercise(props.exerciseIndex).done ? 'bg-exercise-red' : 'bg-exercise-green'
     }`"
+    @click="() => emits('click', exerciseIndex)"
   >
     {{ exerciseNumber }}
   </div>

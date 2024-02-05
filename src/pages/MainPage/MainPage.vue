@@ -70,5 +70,13 @@ watchEffect(() => {
       <ButtonComponent label="Restart" color="special" @click="reset" />
     </div>
   </div>
-  <SetupDialog :open="isSetupOpen" @close="() => (isSetupOpen = false)" />
+  <SetupDialog
+    :open="isSetupOpen"
+    @close="
+      () => {
+        isSetupOpen = false;
+        reset();
+      }
+    "
+  />
 </template>

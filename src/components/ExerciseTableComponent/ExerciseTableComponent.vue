@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useExerciseStore } from '@/stores/ExerciseStore';
 import ExerciseTile from '@/components/ExerciseTableComponent/ExerciseTile.vue';
+import DetailsDialog from '@/components/ExerciseTableComponent/DetailsDialog.vue';
 
 const exerciseStore = useExerciseStore();
+const detailsData = ref({ exerciseIndex: 0, isOpen: false });
 </script>
 
 <template>
@@ -19,7 +22,13 @@ const exerciseStore = useExerciseStore();
           exerciseStore.exerciseTable.cycleLength * (cycleIndex - 1) + exerciseIndex - 1
         "
         :exerciseNumber="exerciseIndex"
+        @click="(exerciseId) => (detailsData = { isOpen: true, exerciseIndex: exerciseId })"
       />
     </div>
   </div>
+  <DetailsDialog
+    :exercise-index="detailsData.exerciseIndex"
+    :open="detailsData.isOpen"
+    @close="() => (detailsData.isOpen = false)"
+  />
 </template>

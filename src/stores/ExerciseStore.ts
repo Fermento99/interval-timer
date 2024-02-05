@@ -129,12 +129,26 @@ export const useExerciseStore = defineStore('exercise', () => {
     exerciseTable.value = generateTable(tableConfig);
   };
 
-  const setExerciseDetails = (index: number, exerciseConfig: Partial<Period>) => {
-    Object.assign(exerciseTable.value.periods[index], exerciseConfig);
+  const setExerciseDetails = (index: number, exerciseConfig: Partial<Period>, setAll = false) => {
+    const exercisesList = exerciseTable.value.periods.filter(
+      (period) => period.mode === 'exercise'
+    );
+    if (setAll) {
+      const length = exerciseTable.value.cycleLength * exerciseTable.value.cycleCount;
+      for (
+        let i = index % exerciseTable.value.cycleLength;
+        i < length;
+        i += exerciseTable.value.cycleLength
+      ) {
+        Object.assign(exercisesList[i], exerciseConfig);
+      }
+    } else {
+      Object.assign(exercisesList[index], exerciseConfig);
+    }
   };
 
   const moveToNextClock = () => {
-    setExerciseDetails(exerciseTable.value.iterator, { done: true });
+    exerciseTable.value.periods[exerciseTable.value.iterator].done = true;
     exerciseTable.value.iterator++;
   };
 
@@ -147,6 +161,7 @@ export const useExerciseStore = defineStore('exercise', () => {
 
   return {
     exerciseTable,
+    exercises,
     currentExercise,
     nextExercise,
     periodSum,
