@@ -20,7 +20,7 @@ interface Period {
 }
 
 type ClockMode = 'exercise' | 'rest' | 'pause';
-type TableConfig = Omit<ExerciseTable, 'cycles' | 'iterator'>;
+export type TableConfig = Omit<ExerciseTable, 'periods' | 'iterator'>;
 
 const DEFAULT_TABLE_CONFIG = <TableConfig>{
   cycleCount: 3,
@@ -126,10 +126,7 @@ export const useExerciseStore = defineStore('exercise', () => {
   const currentClock = computed(() => exerciseTable.value.periods[exerciseTable.value.iterator]);
 
   const setExerciseTableConfig = (tableConfig: TableConfig) => {
-    Object.assign(exerciseTable.value, tableConfig, {
-      iterator: 0,
-      length: tableConfig.cycleLength * tableConfig.cycleCount,
-    });
+    exerciseTable.value = generateTable(tableConfig);
   };
 
   const setExerciseDetails = (index: number, exerciseConfig: Partial<Period>) => {

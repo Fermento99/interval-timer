@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { ref, watchEffect } from 'vue';
+import { useClockStore } from '@/stores/ClockStore';
+import { useExerciseStore } from '@/stores/ExerciseStore';
 import ClockComponent from '@/components/ClockComponent/ClockComponent.vue';
 import ExerciseTableComponent from '@/components/ExerciseTableComponent/ExerciseTableComponent.vue';
 import ButtonComponent from '@/components/ButtonComponent/ButtonComponent.vue';
 import NotesComponent from '@/components/NotesComponent/NotesComponent.vue';
-import { useClockStore } from '@/stores/ClockStore';
-import { useExerciseStore } from '@/stores/ExerciseStore';
-import { watchEffect } from 'vue';
+import SetupDialog from '@/pages/MainPage/SetupDialog.vue';
+
+const isSetupOpen = ref(false);
 
 const clockState = useClockStore();
 const exerciseState = useExerciseStore();
@@ -51,7 +54,13 @@ watchEffect(() => {
       </div>
       <div class="flex flex-col gap-8 items-center justify-center">
         <ExerciseTableComponent />
-        <ButtonComponent label="Training Setup" color="secondary" size="small" is-pill />
+        <ButtonComponent
+          label="Training Setup"
+          color="secondary"
+          size="small"
+          is-pill
+          @click="() => (isSetupOpen = true)"
+        />
         <NotesComponent />
       </div>
     </div>
@@ -61,4 +70,5 @@ watchEffect(() => {
       <ButtonComponent label="Restart" color="special" @click="reset" />
     </div>
   </div>
+  <SetupDialog :open="isSetupOpen" @close="() => (isSetupOpen = false)" />
 </template>

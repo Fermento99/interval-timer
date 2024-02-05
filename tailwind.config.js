@@ -17,6 +17,9 @@ module.exports = {
           primary: '#000000',
           secondary: '#757575',
         },
+        input: {
+          border: '#666666',
+        },
       },
       fontFamily: {
         monospace: ['Share Tech Mono', 'monospace'],
