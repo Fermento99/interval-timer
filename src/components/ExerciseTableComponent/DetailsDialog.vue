@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useExerciseStore } from '@/stores/ExerciseStore';
 import DialogComponent from '@/components/DialogComponent/DialogComponent.vue';
 import TypographyComponent from '@/components/TypographyComponent/TypographyComponent.vue';
@@ -18,10 +18,7 @@ const emits = defineEmits<{
 }>();
 
 const exerciseStore = useExerciseStore();
-const { name, notes } = exerciseStore.exercises[props.exerciseIndex];
-
-// TODO: fix reactivity
-const formData = ref({ name, notes });
+const formData = ref({ name: '', notes: '' });
 
 const handleChange = (key: keyof FormData, event: Event) => {
   formData.value[key] = (event.target as HTMLInputElement).value;
@@ -34,6 +31,15 @@ const saveForAll = () => {
   exerciseStore.setExerciseDetails(props.exerciseIndex, formData.value, true);
   emits('close');
 };
+
+watch(
+  () => props.open,
+  () => {
+    const { name, notes } = exerciseStore.exercises[props.exerciseIndex];
+    formData.value.name = name;
+    formData.value.notes = notes;
+  }
+);
 </script>
 
 <template>
