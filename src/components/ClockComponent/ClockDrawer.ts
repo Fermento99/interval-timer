@@ -2,12 +2,14 @@ type ClockDrawerArgs = {
   ctx: CanvasRenderingContext2D;
   height: number;
   width: number;
-  colors: {
-    escape: string;
-    chase: string;
-    center: string;
-    text: string;
-  };
+  colors: Colors;
+};
+
+type Colors = {
+  escape: string;
+  chase: string;
+  center: string;
+  text: string;
 };
 
 type DrawArgs = {
@@ -28,12 +30,16 @@ export class ClockDrawer {
     this.colors = colors;
   }
 
+  setColors(colors: Colors) {
+    Object.assign(this.colors, colors);
+  }
+
   drawClock({ time, percentage }: DrawArgs) {
     const xCenter = this.width / 2;
     const yCenter = this.height / 2;
     const radius = Math.min(xCenter, yCenter);
     const innerRadius = radius / 2.5;
-    const fontSize = radius / 5;
+    const fontSize = radius / 5.5;
 
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.ctx.beginPath();
@@ -57,7 +63,16 @@ export class ClockDrawer {
     this.ctx.fillStyle = this.colors.text;
     this.ctx.textAlign = 'center';
     this.ctx.font = `${fontSize}px "Share Tech Mono", monospace`;
-    this.ctx.fillText(`${time.toPrecision(2)}s`, xCenter, yCenter + fontSize / 4);
+    this.ctx.fillText(this.getTime(time), xCenter, yCenter + fontSize / 4);
     this.ctx.closePath();
+  }
+
+  private getTime(time: number): string {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+
+    return minutes > 0
+      ? `${minutes}m ${seconds.toFixed(0).padStart(2, '0')}s`
+      : `${seconds.toFixed(2).padStart(5, '0')}s`;
   }
 }

@@ -49,8 +49,8 @@ watchEffect(() => {
   <div class="p-14">
     <div class="flex flex-row gap-14 justify-center">
       <div class="flex flex-row items-end">
-        <ClockComponent clock-id="exercise-clock" />
-        <ClockComponent clock-id="training-clock" size="small" />
+        <ClockComponent clock-id="exercise-clock" :mode="exerciseState.currentClock.mode" />
+        <ClockComponent clock-id="training-clock" mode="pause" size="small" is-backward />
       </div>
       <div class="flex flex-col gap-8 items-center justify-center">
         <ExerciseTableComponent />

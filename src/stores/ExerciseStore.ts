@@ -25,7 +25,7 @@ export interface Period {
   mode: ClockMode;
 }
 
-type ClockMode = 'exercise' | 'rest' | 'pause';
+export type ClockMode = 'exercise' | 'rest' | 'pause';
 export type TableConfig = Omit<ExerciseTable, 'periods' | 'iterator'>;
 
 const DEFAULT_TABLE_CONFIG = <TableConfig>{

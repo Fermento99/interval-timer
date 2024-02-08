@@ -20,10 +20,8 @@ export const saveDefaultConfig = (config: Partial<SavedConfig>) => {
     const savedConfig = getDefaultConfig();
     config.exercises?.forEach((exercise, index) => (savedConfig.exercises[index] = exercise));
     const tempExerciseTable = [...savedConfig.exercises];
-    console.log('save config', config);
     Object.assign(savedConfig, config);
     savedConfig.exercises = tempExerciseTable;
-    console.log('assigned', savedConfig);
     setKey('interval-timer_default-config', savedConfig);
   } catch (err) {
     setKey('interval-timer_default-config', config);
