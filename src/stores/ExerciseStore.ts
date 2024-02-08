@@ -1,5 +1,11 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import {
+  type ExerciseDetails,
+  getDefaultConfig,
+  type SavedConfig,
+  saveDefaultConfig,
+} from '@/stores/LocalStorageUtils';
 
 interface ExerciseTable {
   periods: Period[];
@@ -11,7 +17,7 @@ interface ExerciseTable {
   iterator: number;
 }
 
-interface Period {
+export interface Period {
   name: string;
   notes: string;
   done: boolean;
@@ -25,13 +31,21 @@ export type TableConfig = Omit<ExerciseTable, 'periods' | 'iterator'>;
 const DEFAULT_TABLE_CONFIG = <TableConfig>{
   cycleCount: 3,
   cycleLength: 7,
-  exerciseTime: 0.5,
-  restTime: 0.2,
-  pauseTime: 5,
+  exerciseTime: 30,
+  restTime: 20,
+  pauseTime: 120,
 };
 
-const generateTable = (config: TableConfig): ExerciseTable => {
-  const { cycleCount, cycleLength, exerciseTime, restTime, pauseTime } = config;
+const generateTable = (): ExerciseTable => {
+  let defaultConfig: SavedConfig;
+
+  try {
+    defaultConfig = getDefaultConfig();
+  } catch (error) {
+    defaultConfig = { ...DEFAULT_TABLE_CONFIG, exercises: [] };
+  }
+
+  const { cycleCount, cycleLength, exerciseTime, restTime, pauseTime, exercises } = defaultConfig;
   const length = cycleCount * cycleLength;
   const periods = [
     {
@@ -45,8 +59,8 @@ const generateTable = (config: TableConfig): ExerciseTable => {
       .fill(null)
       .flatMap((_, index): Period[] => [
         {
-          name: 'New Exercise',
-          notes: '--',
+          name: exercises?.[index % cycleLength]?.name || 'New Exercise',
+          notes: exercises?.[index % cycleLength]?.notes || '--',
           done: false,
           time: exerciseTime,
           mode: 'exercise',
@@ -71,14 +85,18 @@ const generateTable = (config: TableConfig): ExerciseTable => {
   periods.pop();
 
   return <ExerciseTable>{
-    ...config,
+    cycleCount,
+    cycleLength,
+    exerciseTime,
+    restTime,
+    pauseTime,
     periods,
     iterator: 0,
   };
 };
 
 export const useExerciseStore = defineStore('exercise', () => {
-  const exerciseTable = ref<ExerciseTable>(generateTable(DEFAULT_TABLE_CONFIG));
+  const exerciseTable = ref<ExerciseTable>(generateTable());
 
   const periodSum = computed(() => {
     const pauses = exerciseTable.value.pauseTime * (exerciseTable.value.cycleCount - 1) + 10;
@@ -126,7 +144,8 @@ export const useExerciseStore = defineStore('exercise', () => {
   const currentClock = computed(() => exerciseTable.value.periods[exerciseTable.value.iterator]);
 
   const setExerciseTableConfig = (tableConfig: TableConfig) => {
-    exerciseTable.value = generateTable(tableConfig);
+    saveDefaultConfig(tableConfig);
+    exerciseTable.value = generateTable();
   };
 
   const setExerciseDetails = (index: number, exerciseConfig: Partial<Period>, setAll = false) => {
@@ -134,6 +153,15 @@ export const useExerciseStore = defineStore('exercise', () => {
       (period) => period.mode === 'exercise'
     );
     if (setAll) {
+      // save exercise details to Local Storage
+      const configExercises: ExerciseDetails[] = [];
+      configExercises[index % exerciseTable.value.cycleLength] = {
+        name: exerciseConfig.name,
+        notes: exerciseConfig.notes,
+      } as ExerciseDetails;
+      saveDefaultConfig({ exercises: configExercises });
+
+      // update exercise table
       const length = exerciseTable.value.cycleLength * exerciseTable.value.cycleCount;
       for (
         let i = index % exerciseTable.value.cycleLength;
