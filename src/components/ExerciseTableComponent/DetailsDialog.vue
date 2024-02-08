@@ -51,12 +51,14 @@ watch(
       <InputComponent
         label="Exercise Name"
         type="text"
+        input-width="wide"
         :value="formData.name"
         @change="(event) => handleChange('name', event)"
       />
       <InputComponent
         label="Exercise Notes"
         type="text"
+        input-width="wide"
         :value="formData.notes"
         @change="(event) => handleChange('notes', event)"
       />
