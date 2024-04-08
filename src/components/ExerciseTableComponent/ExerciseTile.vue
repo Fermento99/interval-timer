@@ -27,12 +27,14 @@ const done = computed(() => exerciseStore.getExercise(props.exerciseIndex).done)
 
 <template>
   <div
-    :class="`w-14 h-10 px-2 py-1 text-white text-xs flex justify-between ${
+    :class="`w-10 md:w-14 h-10 px-2 py-1 text-white text-xs flex justify-center md:justify-between ${
       done ? 'bg-exercise-red' : 'bg-exercise-green'
     }`"
     @click="() => emits('click', exerciseIndex)"
   >
-    <span>{{ initials }}</span>
-    <span class="self-end ml-auto">{{ exerciseNumber }}</span>
+    <span class="max-md:hidden">{{ initials }}</span>
+    <span class="self-center md:self-end ml-auto max-md:mr-auto max-md:text-lg">{{
+      exerciseNumber
+    }}</span>
   </div>
 </template>

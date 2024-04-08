@@ -30,6 +30,14 @@ const reset = () => {
   clockState.setClock('training-clock', { period: exerciseState.periodSum });
 };
 
+const closeSetup = () => {
+  isSetupOpen.value = false;
+};
+
+const openSetup = () => {
+  isSetupOpen.value = true;
+};
+
 watchEffect(() => {
   const clock = clockState.getClock('exercise-clock');
   if (clock.finished) {
@@ -46,11 +54,15 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="p-14">
-    <div class="flex flex-row gap-14 justify-center">
+  <div class="md:py-14 py-4 px-2">
+    <div class="flex flex-row flex-wrap md:flex-nowrap gap-8 md:gap-14 justify-center items-center">
       <div class="flex flex-row items-end">
-        <ClockComponent clock-id="exercise-clock" :mode="exerciseState.currentClock.mode" />
-        <ClockComponent clock-id="training-clock" mode="pause" size="small" is-backward />
+        <ClockComponent
+          class="w-[70%]"
+          clock-id="exercise-clock"
+          :mode="exerciseState.currentClock.mode"
+        />
+        <ClockComponent class="w-[30%]" clock-id="training-clock" mode="pause" is-backward />
       </div>
       <div class="flex flex-col gap-8 items-center justify-center">
         <ExerciseTableComponent />
@@ -59,7 +71,7 @@ watchEffect(() => {
           color="secondary"
           size="small"
           is-pill
-          @click="() => (isSetupOpen = true)"
+          @click="openSetup"
         />
         <NotesComponent />
       </div>
@@ -70,13 +82,5 @@ watchEffect(() => {
       <ButtonComponent label="Restart" color="special" @click="reset" />
     </div>
   </div>
-  <SetupDialog
-    :open="isSetupOpen"
-    @close="
-      () => {
-        isSetupOpen = false;
-        reset();
-      }
-    "
-  />
+  <SetupDialog :open="isSetupOpen" :reset="reset" @close="closeSetup" />
 </template>

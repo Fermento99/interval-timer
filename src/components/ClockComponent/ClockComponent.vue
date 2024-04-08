@@ -8,11 +8,9 @@ const props = withDefaults(
   defineProps<{
     clockId: string;
     mode: ClockMode;
-    size?: 'big' | 'small';
     isBackward?: boolean;
   }>(),
   {
-    size: 'big',
     isBackward: false,
   }
 );
@@ -24,17 +22,6 @@ const elapsedTime = computed(
     (props.isBackward ? currentClock.period - currentClock.progress : currentClock.progress) / 1000
 );
 const percentage = computed(() => currentClock.progress / currentClock.period);
-
-const sizeValue = computed(() => {
-  switch (props.size) {
-    case 'big':
-      return 500;
-    case 'small':
-      return 250;
-    default:
-      return 500;
-  }
-});
 </script>
 
 <template>
@@ -42,8 +29,6 @@ const sizeValue = computed(() => {
     :clock-id="clockId"
     :percentage="percentage"
     :elapsed-time="elapsedTime"
-    :height="sizeValue"
-    :width="sizeValue"
     :mode="mode"
     :isBackward="isBackward"
   />

@@ -11,7 +11,7 @@ const detailsData = ref({ exerciseIndex: 0, isOpen: false });
 <template>
   <div class="flex flex-col gap-2">
     <div
-      class="flex flex-row gap-2"
+      class="flex flex-row flex-wrap gap-x-2 gap-y-1"
       v-for="cycleIndex in exerciseStore.exerciseTable.cycleCount"
       :key="cycleIndex"
     >

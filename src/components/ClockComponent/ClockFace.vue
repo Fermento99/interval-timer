@@ -7,8 +7,6 @@ const props = defineProps<{
   clockId: string;
   percentage: number;
   elapsedTime: number;
-  height: number;
-  width: number;
   mode: ClockMode;
   isBackward: boolean;
 }>();
@@ -32,8 +30,8 @@ onMounted(() => {
   const ctx = canvas.getContext('2d')!;
   drawer.value = new ClockDrawer({
     ctx,
-    height: props.height,
-    width: props.width,
+    height: 500,
+    width: 500,
     colors: getColors(props.mode),
   });
 
@@ -60,5 +58,5 @@ watch(
 </script>
 
 <template>
-  <canvas :id="clockId" :width="width" :height="height" />
+  <canvas :id="clockId" width="500" height="500" />
 </template>

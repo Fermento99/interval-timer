@@ -8,6 +8,7 @@ import TypographyComponent from '@/components/TypographyComponent/TypographyComp
 
 const props = defineProps<{
   open: boolean;
+  reset: () => void;
 }>();
 
 const emits = defineEmits<{
@@ -25,6 +26,7 @@ const handleChange = (key: keyof TableConfig, event: Event) => {
 
 const save = () => {
   exerciseTableStore.setExerciseTableConfig(formData.value);
+  props.reset();
   emits('close');
 };
 </script>

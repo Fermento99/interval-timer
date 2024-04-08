@@ -7,9 +7,9 @@ const props = defineProps<{
 <template>
   <div
     v-if="props.open"
-    class="absolute top-0 left-0 w-full h-full bg-black/60 flex items-center justify-center"
+    class="fixed top-0 left-0 w-full h-full bg-black/60 flex items-center justify-center"
   >
-    <div class="z-10 border border-black rounded overflow-clip w-96">
+    <div class="z-10 mx-4 border border-black rounded overflow-clip w-96">
       <div class="p-4 bg-gray-300 border-b-black border-b">
         <slot name="header" />
       </div>
