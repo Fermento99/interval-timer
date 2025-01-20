@@ -7,6 +7,7 @@ import ExerciseTableComponent from '@/components/ExerciseTableComponent/Exercise
 import ButtonComponent from '@/components/ButtonComponent/ButtonComponent.vue';
 import NotesComponent from '@/components/NotesComponent/NotesComponent.vue';
 import SetupDialog from '@/pages/MainPage/SetupDialog.vue';
+import NoSleepComponent from '@/components/NoSleepComponent/NoSleepComponent.vue';
 
 const isSetupOpen = ref(false);
 
@@ -54,6 +55,7 @@ watchEffect(() => {
 </script>
 
 <template>
+  <NoSleepComponent />
   <div class="md:py-14 py-4 px-2">
     <div class="flex flex-row flex-wrap md:flex-nowrap gap-8 md:gap-14 justify-center items-center">
       <div class="flex flex-row items-end">
